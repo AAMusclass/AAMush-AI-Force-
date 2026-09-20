@@ -1886,7 +1886,15 @@ function resetSystem(){
 }
 
 
-renderAll();
+try {
+  renderAll();
+} catch (e) {
+  document.body.insertAdjacentHTML(
+    "afterbegin",
+    '<div style="background:#ff4444;color:white;padding:15px;font-family:Arial;position:relative;z-index:99999">AAF ERROR: ' + e.message + '</div>'
+  );
+  console.error(e);
+}
 
 </script>
 
