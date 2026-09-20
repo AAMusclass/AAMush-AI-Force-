@@ -1,0 +1,936 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>AAMush AI Force | Command Centre</title>
+
+<style>
+:root{
+  --bg:#07111f;
+  --panel:#0d1b2a;
+  --panel2:#102338;
+  --line:#1e3a55;
+  --text:#e8f1f8;
+  --muted:#8fa7ba;
+  --accent:#36d1dc;
+  --green:#43e08c;
+  --yellow:#ffd166;
+  --red:#ff647c;
+  --blue:#5ea7ff;
+}
+
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:linear-gradient(135deg,#050b14,#091a2a 55%,#07111f);
+  color:var(--text);
+  font-family:Arial,Helvetica,sans-serif;
+}
+
+header{
+  padding:18px;
+  border-bottom:1px solid var(--line);
+  background:rgba(5,12,22,.94);
+  position:sticky;
+  top:0;
+  z-index:10;
+}
+
+.brand{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+}
+
+.logo{
+  width:48px;
+  height:48px;
+  border:2px solid var(--accent);
+  border-radius:12px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:bold;
+  color:var(--accent);
+  box-shadow:0 0 18px rgba(54,209,220,.18);
+}
+
+h1{
+  margin:0;
+  font-size:21px;
+}
+
+.subtitle{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:4px;
+}
+
+.statuses{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:10px;
+}
+
+.badge{
+  border:1px solid var(--line);
+  border-radius:20px;
+  padding:5px 9px;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.badge.online{
+  color:var(--green);
+  border-color:rgba(67,224,140,.4);
+}
+
+.badge.sim{
+  color:var(--yellow);
+  border-color:rgba(255,209,102,.4);
+}
+
+nav{
+  display:flex;
+  overflow-x:auto;
+  gap:7px;
+  padding:12px;
+  background:#081522;
+  border-bottom:1px solid var(--line);
+}
+
+nav button{
+  white-space:nowrap;
+  border:1px solid var(--line);
+  background:#0b1b2b;
+  color:var(--muted);
+  padding:9px 12px;
+  border-radius:8px;
+}
+
+nav button.active{
+  color:var(--text);
+  border-color:var(--accent);
+  background:#102c3d;
+}
+
+main{
+  max-width:1250px;
+  margin:auto;
+  padding:15px;
+}
+
+.tab{
+  display:none;
+}
+
+.tab.active{
+  display:block;
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(12,1fr);
+  gap:12px;
+}
+
+.card{
+  grid-column:span 4;
+  background:rgba(13,27,42,.92);
+  border:1px solid var(--line);
+  border-radius:12px;
+  padding:14px;
+  box-shadow:0 8px 25px rgba(0,0,0,.16);
+}
+
+.card.wide{
+  grid-column:span 8;
+}
+
+.card.full{
+  grid-column:1/-1;
+}
+
+.card h2{
+  font-size:14px;
+  margin:0 0 12px;
+}
+
+.metric{
+  font-size:27px;
+  font-weight:bold;
+  margin:5px 0;
+}
+
+.small{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  padding:9px 0;
+  border-bottom:1px solid rgba(30,58,85,.55);
+}
+
+.row:last-child{
+  border-bottom:0;
+}
+
+.signal{
+  width:9px;
+  height:9px;
+  border-radius:50%;
+  display:inline-block;
+  margin-right:7px;
+}
+
+.green{background:var(--green)}
+.yellow{background:var(--yellow)}
+.red{background:var(--red)}
+.blue{background:var(--blue)}
+
+.event{
+  border-left:3px solid var(--accent);
+  padding:10px;
+  margin-bottom:8px;
+  background:#0a1a29;
+  border-radius:5px;
+}
+
+.event strong{
+  display:block;
+  font-size:12px;
+  margin-bottom:4px;
+}
+
+.event span{
+  font-size:11px;
+  color:var(--muted);
+}
+
+.agent{
+  border:1px solid var(--line);
+  padding:11px;
+  border-radius:8px;
+  margin-bottom:8px;
+  background:#0a1826;
+}
+
+.agent-title{
+  display:flex;
+  justify-content:space-between;
+  font-size:12px;
+  font-weight:bold;
+}
+
+.progress{
+  height:6px;
+  background:#07111b;
+  border-radius:5px;
+  overflow:hidden;
+  margin-top:8px;
+}
+
+.progress div{
+  height:100%;
+  width:80%;
+  background:var(--accent);
+}
+
+button.action{
+  background:#0e2637;
+  color:var(--text);
+  border:1px solid var(--line);
+  border-radius:7px;
+  padding:8px 10px;
+  cursor:pointer;
+}
+
+button.action:hover{
+  border-color:var(--accent);
+}
+
+button.authorize{
+  border-color:var(--yellow);
+  color:var(--yellow);
+}
+
+.alert{
+  border:1px solid rgba(255,100,124,.45);
+  background:rgba(255,100,124,.08);
+  padding:12px;
+  border-radius:8px;
+}
+
+.success{
+  border:1px solid rgba(67,224,140,.4);
+  background:rgba(67,224,140,.07);
+  padding:12px;
+  border-radius:8px;
+}
+
+pre{
+  white-space:pre-wrap;
+  font-size:10px;
+  color:#a8bfd0;
+  line-height:1.5;
+}
+
+footer{
+  text-align:center;
+  padding:25px 15px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+@media(max-width:850px){
+  .card,.card.wide{
+    grid-column:1/-1;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="brand">
+    <div style="display:flex;gap:12px;align-items:center">
+      <div class="logo">AAF</div>
+      <div>
+        <h1>AAMush AI Force</h1>
+        <div class="subtitle">
+          African Intelligence, Innovation & Resilience System
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="statuses">
+    <span class="badge online">● SYSTEM ONLINE</span>
+    <span class="badge">AP-01 CORE</span>
+    <span class="badge sim">SIMULATED</span>
+    <span class="badge">HUMAN CONTROLLED</span>
+  </div>
+</header>
+
+<nav>
+  <button class="active" onclick="openTab('command',this)">Command Centre</button>
+  <button onclick="openTab('intelligence',this)">Intelligence</button>
+  <button onclick="openTab('agents',this)">Agents</button>
+  <button onclick="openTab('sentinel',this)">Sentinel</button>
+  <button onclick="openTab('power',this)">PowerShield</button>
+  <button onclick="openTab('audit',this)">Audit</button>
+</nav>
+
+<main>
+
+<!-- COMMAND CENTRE -->
+<section id="command" class="tab active">
+  <div class="grid">
+
+    <div class="card">
+      <h2>AP-01 Intelligence Core</h2>
+      <div class="metric">ONLINE</div>
+      <div class="small">Observe → Understand → Predict → Decide → Act → Verify</div>
+    </div>
+
+    <div class="card">
+      <h2>Active AI Agents</h2>
+      <div class="metric" id="agentCount">7</div>
+      <div class="small">Registered prototype agents</div>
+    </div>
+
+    <div class="card">
+      <h2>Security Status</h2>
+      <div class="metric">GREEN</div>
+      <div class="small">No simulated critical intrusion detected</div>
+    </div>
+
+    <div class="card wide">
+      <h2>Risk Monitor</h2>
+
+      <div class="row">
+        <span><i class="signal yellow"></i>Border congestion</span>
+        <strong>MEDIUM</strong>
+      </div>
+
+      <div class="row">
+        <span><i class="signal green"></i>Education infrastructure</span>
+        <strong>LOW</strong>
+      </div>
+
+      <div class="row">
+        <span><i class="signal yellow"></i>Energy resilience</span>
+        <strong>MEDIUM</strong>
+      </div>
+
+      <div class="row">
+        <span><i class="signal green"></i>AI infrastructure</span>
+        <strong>LOW</strong>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Prediction Engine</h2>
+
+      <div class="success">
+        <strong>Likely next event</strong>
+        <div class="small">
+          Increased processing demand detected in the simulated
+          intelligence environment.
+        </div>
+      </div>
+
+      <br>
+
+      <button class="action" onclick="runPrediction()">
+        Run Prediction
+      </button>
+    </div>
+
+    <div class="card full">
+      <h2>Human Authorization Gate</h2>
+
+      <div class="alert">
+        AI systems may analyse, recommend and prepare actions.
+        Execution of consequential actions remains subject to human
+        authorization.
+      </div>
+
+      <br>
+
+      <button class="action authorize" onclick="authorizeDemo()">
+        Authorize Demonstration Action
+      </button>
+
+      <span id="authResult" class="small" style="margin-left:10px"></span>
+    </div>
+
+    <div class="card wide">
+      <h2>Live Intelligence Event Stream</h2>
+      <div id="events"></div>
+    </div>
+
+    <div class="card">
+      <h2>System Cycle</h2>
+
+      <div class="row"><span>01 Observe</span><span class="green">DONE</span></div>
+      <div class="row"><span>02 Understand</span><span class="green">DONE</span></div>
+      <div class="row"><span>03 Predict</span><span class="green">DONE</span></div>
+      <div class="row"><span>04 Decide</span><span class="yellow">HUMAN</span></div>
+      <div class="row"><span>05 Act</span><span class="yellow">CONTROLLED</span></div>
+      <div class="row"><span>06 Verify</span><span class="green">READY</span></div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- INTELLIGENCE -->
+<section id="intelligence" class="tab">
+
+  <div class="grid">
+
+    <div class="card full">
+      <h2>AAMush Intelligence Pipeline</h2>
+
+      <div class="row">
+        <span>Data acquisition</span>
+        <strong class="green">ACTIVE</strong>
+      </div>
+
+      <div class="row">
+        <span>Data validation</span>
+        <strong class="green">ACTIVE</strong>
+      </div>
+
+      <div class="row">
+        <span>Context analysis</span>
+        <strong class="green">ACTIVE</strong>
+      </div>
+
+      <div class="row">
+        <span>Prediction</span>
+        <strong class="yellow">SIMULATED</strong>
+      </div>
+
+      <div class="row">
+        <span>Human decision gate</span>
+        <strong class="yellow">REQUIRED</strong>
+      </div>
+    </div>
+
+    <div class="card wide">
+      <h2>Knowledge Graph</h2>
+
+      <pre>
+AAMush AI Force
+│
+├── AP-01
+│   ├── Memory
+│   ├── Reasoning
+│   ├── Orchestration
+│   └── Policy Engine
+│
+├── Intelligence
+│   ├── Trade
+│   ├── Education
+│   ├── Agriculture
+│   ├── Infrastructure
+│   └── Energy
+│
+├── Sentinel
+│   ├── Authentication
+│   ├── Authorization
+│   ├── Monitoring
+│   └── Audit
+│
+└── PowerShield
+    ├── Energy
+    ├── Backup
+    └── Resilience
+      </pre>
+    </div>
+
+    <div class="card">
+      <h2>Current Intelligence</h2>
+
+      <div class="metric">94%</div>
+
+      <div class="small">
+        Prototype confidence indicator
+      </div>
+
+      <br>
+
+      <button class="action" onclick="refreshIntel()">
+        Refresh Intelligence
+      </button>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- AGENTS -->
+<section id="agents" class="tab">
+
+  <div class="grid">
+
+    <div class="card full">
+      <h2>AI Agent Registry</h2>
+      <div id="agents"></div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- SENTINEL -->
+<section id="sentinel" class="tab">
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>Authentication</h2>
+      <div class="metric">GREEN</div>
+      <div class="small">Identity verification layer</div>
+    </div>
+
+    <div class="card">
+      <h2>Authorization</h2>
+      <div class="metric">ACTIVE</div>
+      <div class="small">Human-controlled permissions</div>
+    </div>
+
+    <div class="card">
+      <h2>Monitoring</h2>
+      <div class="metric">LIVE</div>
+      <div class="small">Prototype security monitoring</div>
+    </div>
+
+    <div class="card full">
+      <h2>Sentinel Security Pipeline</h2>
+
+      <div class="row">
+        <span>Identity</span>
+        <strong class="green">VERIFIED</strong>
+      </div>
+
+      <div class="row">
+        <span>Request</span>
+        <strong class="green">INSPECTED</strong>
+      </div>
+
+      <div class="row">
+        <span>Permission</span>
+        <strong class="yellow">POLICY CHECK</strong>
+      </div>
+
+      <div class="row">
+        <span>Execution</span>
+        <strong class="yellow">HUMAN GATE</strong>
+      </div>
+
+      <div class="row">
+        <span>Audit</span>
+        <strong class="green">RECORDED</strong>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- POWERSHIELD -->
+<section id="power" class="tab">
+
+  <div class="grid">
+
+    <div class="card">
+      <h2>PowerShield</h2>
+      <div class="metric">READY</div>
+      <div class="small">
+        AI infrastructure resilience layer
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Primary Power</h2>
+      <div class="metric">STABLE</div>
+    </div>
+
+    <div class="card">
+      <h2>Backup</h2>
+      <div class="metric">AVAILABLE</div>
+    </div>
+
+    <div class="card full">
+      <h2>Resilience Architecture</h2>
+
+      <div class="row">
+        <span>Grid power</span>
+        <strong class="green">PRIMARY</strong>
+      </div>
+
+      <div class="row">
+        <span>Battery storage</span>
+        <strong class="green">STANDBY</strong>
+      </div>
+
+      <div class="row">
+        <span>Solar generation</span>
+        <strong class="green">AVAILABLE</strong>
+      </div>
+
+      <div class="row">
+        <span>Automatic transfer</span>
+        <strong class="yellow">DESIGN STAGE</strong>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- AUDIT -->
+<section id="audit" class="tab">
+
+  <div class="grid">
+
+    <div class="card full">
+      <h2>Audit & Verification Trail</h2>
+      <div id="auditLog"></div>
+    </div>
+
+  </div>
+</section>
+
+</main>
+
+<footer>
+  AAMush AI Force — Prototype v0.1<br>
+  Developed by AAMush Technologies / AAMush Inc.<br>
+  Human authority remains responsible for consequential decisions.
+</footer>
+
+
+<script>
+
+const agents = [
+
+{
+ id:"AP01-Core",
+ name:"AP-01 Intelligence Core",
+ role:"Reasoning, memory and orchestration",
+ status:"ACTIVE",
+ level:"A5"
+},
+
+{
+ id:"Knowledge-001",
+ name:"Knowledge Intelligence Agent",
+ role:"Knowledge graph and contextual analysis",
+ status:"ACTIVE",
+ level:"A3"
+},
+
+{
+ id:"Sentinel-001",
+ name:"AAMush Sentinel",
+ role:"Security monitoring and authorization",
+ status:"ACTIVE",
+ level:"A4"
+},
+
+{
+ id:"Trade-001",
+ name:"Trade Intelligence Agent",
+ role:"Trade corridor and logistics intelligence",
+ status:"ACTIVE",
+ level:"A3"
+},
+
+{
+ id:"Education-001",
+ name:"Education Intelligence Agent",
+ role:"Learning and education analytics",
+ status:"ACTIVE",
+ level:"A2"
+},
+
+{
+ id:"Power-001",
+ name:"PowerShield Intelligence Agent",
+ role:"Energy resilience monitoring",
+ status:"ACTIVE",
+ level:"A3"
+},
+
+{
+ id:"Audit-001",
+ name:"Audit Intelligence Agent",
+ role:"Verification and accountability",
+ status:"ACTIVE",
+ level:"A4"
+}
+
+];
+
+
+const events = [
+
+{
+ title:"Intelligence cycle initialized",
+ text:"AP-01 completed simulated observation and context analysis."
+},
+
+{
+ title:"Risk signal detected",
+ text:"Medium-level infrastructure demand signal entered the monitoring queue."
+},
+
+{
+ title:"Agent heartbeat",
+ text:"Seven registered prototype agents reporting operational status."
+},
+
+{
+ title:"Security verification",
+ text:"Sentinel completed simulated permission inspection."
+},
+
+{
+ title:"PowerShield heartbeat",
+ text:"Resilience subsystem reports standby capability."
+}
+
+];
+
+
+const audit = [
+
+"AP-01 initialized — prototype session",
+"Agent Registry loaded — 7 agents",
+"Sentinel security pipeline initialized",
+"Human authorization gate initialized",
+"PowerShield resilience status loaded"
+];
+
+
+function openTab(id,button){
+
+  document.querySelectorAll(".tab").forEach(
+    x=>x.classList.remove("active")
+  );
+
+  document.getElementById(id).classList.add("active");
+
+  document.querySelectorAll("nav button").forEach(
+    x=>x.classList.remove("active")
+  );
+
+  button.classList.add("active");
+}
+
+
+function renderAgents(){
+
+  const container=document.getElementById("agents");
+
+  container.innerHTML="";
+
+  agents.forEach(agent=>{
+
+    container.innerHTML+=`
+
+      <div class="agent">
+
+        <div class="agent-title">
+
+          <span>
+            ${agent.name}
+          </span>
+
+          <span style="color:var(--green)">
+            ${agent.status}
+          </span>
+
+        </div>
+
+        <div class="small">
+          ID: ${agent.id}
+        </div>
+
+        <div class="small">
+          Authority Level: ${agent.level}
+        </div>
+
+        <div class="small">
+          ${agent.role}
+        </div>
+
+        <div class="progress">
+          <div></div>
+        </div>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+function renderEvents(){
+
+  const container=document.getElementById("events");
+
+  container.innerHTML="";
+
+  events.forEach(event=>{
+
+    container.innerHTML+=`
+
+      <div class="event">
+
+        <strong>${event.title}</strong>
+
+        <span>${event.text}</span>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+function renderAudit(){
+
+  const container=document.getElementById("auditLog");
+
+  container.innerHTML="";
+
+  audit.forEach((item,index)=>{
+
+    container.innerHTML+=`
+
+      <div class="row">
+
+        <span>
+          ${String(index+1).padStart(2,"0")}
+          — ${item}
+        </span>
+
+        <strong class="green">
+          VERIFIED
+        </strong>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+
+function runPrediction(){
+
+  alert(
+    "AP-01 Prediction Engine\n\n" +
+    "Prediction generated successfully.\n\n" +
+    "Result: increased processing demand.\n" +
+    "Confidence: simulated 94%.\n\n" +
+    "No consequential action was executed."
+  );
+
+}
+
+
+function authorizeDemo(){
+
+  const result=document.getElementById("authResult");
+
+  result.innerHTML=
+    "✓ Demonstration action authorized by human operator.";
+
+  audit.push(
+    "Human operator authorized demonstration action"
+  );
+
+  renderAudit();
+
+}
+
+
+function refreshIntel(){
+
+  alert(
+    "Intelligence refreshed.\n\n" +
+    "AP-01 has reprocessed the simulated intelligence state."
+  );
+
+}
+
+
+renderAgents();
+renderEvents();
+renderAudit();
+
+</script>
+
+</body>
+</html>
