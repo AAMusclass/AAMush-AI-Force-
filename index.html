@@ -2181,8 +2181,9 @@ function authorizeDemo(){
 
   const approved =
     confirm(
-      "Authorize simulated demonstration action?\n\n"+
-      "No external system will be changed."
+      "AUTHORIZE SIMULATED ACTION?\n\n"+
+      "No external system will be changed.\n\n"+
+      "Continue?"
     );
 
   if(!approved){
@@ -2200,6 +2201,22 @@ function authorizeDemo(){
     return;
 
   }
+
+  addSecurityEvent(
+    "Human authorization granted for simulated demonstration action.",
+    "AUTHORIZED"
+  );
+
+  addEvent(
+    "Human authorization gate approved a simulated action."
+  );
+
+  addAudit(
+    "DEMO_ACTION",
+    "AUTHORIZED_SIMULATION_ONLY"
+  );
+
+}
 
   addSecurityEvent(
     "Human authorization granted for simulated demonstration action.",
